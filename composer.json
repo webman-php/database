@@ -4,7 +4,7 @@
   "license": "MIT",
   "description": "Webman database",
   "require": {
-    "workerman/webman-framework": "^2.0.0",
+    "workerman/webman-framework": "^2.0.0 || dev-master",
     "webman/coroutine": "^1.0.0"
   },
   "autoload": {
