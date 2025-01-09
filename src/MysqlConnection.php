@@ -32,8 +32,4 @@ class MysqlConnection extends BaseMySqlConnection
         return $result;
     }
 
-    public function __destruct()
-    {
-        echo "__destruct\n";
-    }
 }
