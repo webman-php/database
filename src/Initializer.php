@@ -35,7 +35,7 @@ class Initializer
      * @return void
      */
     public static function init($config): void
-    {;
+    {
         $connections = $config['connections'] ?? [];
         if (!$connections) {
             return;
