@@ -15,8 +15,9 @@
 namespace support;
 
 use Closure;
-use Illuminate\Database\Capsule\Manager;
-use Illuminate\Database\Connection;
+use Webman\Database\Manager;
+
+require_once __DIR__ . '/../Initializer.php';
 
 /**
  * Class Db
@@ -33,20 +34,5 @@ use Illuminate\Database\Connection;
  */
 class Db extends Manager
 {
-    /**
-     * @return Manager
-     */
-    public static function getInstance(): Manager
-    {
-        return static::$instance;
-    }
-
-    /**
-     * @return Connection[]
-     */
-    public static function getConnections(): array
-    {
-        return static::$instance->getDatabaseManager()->getConnections();
-    }
 
 }

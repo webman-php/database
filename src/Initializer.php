@@ -24,6 +24,9 @@ use Jenssegers\Mongodb\Connection as JenssegersMongodbConnection;
 use MongoDB\Laravel\Connection as LaravelMongodbConnection;
 use support\Container;
 
+/**
+ * Class Initializer
+ */
 class Initializer
 {
 
@@ -96,3 +99,5 @@ class Initializer
     }
 
 }
+
+Initializer::init(config('database', []));

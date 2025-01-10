@@ -7,6 +7,9 @@ use Throwable;
 use Webman\Context;
 use Webman\Coroutine\Pool;
 
+/**
+ * Class DatabaseManager
+ */
 class DatabaseManager extends BaseDatabaseManager
 {
 
@@ -37,10 +40,10 @@ class DatabaseManager extends BaseDatabaseManager
                     return $this->configure($this->makeConnection($database), $type);
                 });
                 $pool->setConnectionCloser(function ($connection) {
-                    $connection->disconnect();
+                    $this->closeAndFreeConnection($connection);
                 });
                 $pool->setHeartbeatChecker(function ($connection) {
-                    return $connection->select('select 1');
+                    $connection->select('select 1');
                 });
                 static::$pools[$name] = $pool;
             }
@@ -58,6 +61,21 @@ class DatabaseManager extends BaseDatabaseManager
             }
         }
         return $connection;
+    }
+
+    /**
+     * Close connection.
+     *
+     * @param $connection
+     * @return void
+     */
+    protected function closeAndFreeConnection($connection): void
+    {
+        $connection->disconnect();
+        $clearProperties = function () {
+            $this->queryGrammar = null;
+        };
+        $clearProperties->call($connection);
     }
 
 }

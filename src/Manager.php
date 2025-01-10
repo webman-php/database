@@ -2,9 +2,11 @@
 
 namespace Webman\Database;
 
-use Illuminate\Database\Connection;
 use Illuminate\Database\Connectors\ConnectionFactory;
 
+/**
+ * Class Manager
+ */
 class Manager extends \Illuminate\Database\Capsule\Manager
 {
     /**
@@ -16,8 +18,5 @@ class Manager extends \Illuminate\Database\Capsule\Manager
     {
         $factory = new ConnectionFactory($this->container);
         $this->manager = new DatabaseManager($this->container, $factory);
-        Connection::resolverFor('mysql', function ($connection, $database, $prefix, $config) {
-            return new MySqlConnection($connection, $database, $prefix, $config);
-        });
     }
 }
