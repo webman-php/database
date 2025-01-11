@@ -15,8 +15,9 @@ return  [
             'strict'      => true,
             'engine'      => null,
             'options'   => [
-                PDO::ATTR_EMULATE_PREPARES => false,
+                PDO::ATTR_EMULATE_PREPARES => false, // Must be false for Swoole and Swow drivers.
             ],
+            // Connection pool, supports only Swoole or Swow drivers.
             'pool' => [
                 'max_connections' => 5,
                 'min_connections' => 1,
