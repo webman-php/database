@@ -4,7 +4,7 @@
   "license": "MIT",
   "description": "Webman database",
   "require": {
-    "workerman/webman-framework": "^2.0 || dev-master",
+    "workerman/webman-framework": "^2.1 || dev-master",
     "webman/coroutine": "^1.0 || dev-main",
     "illuminate/database": "^10.0 || ^11.0",
     "laravel/serializable-closure": "^2.0"
