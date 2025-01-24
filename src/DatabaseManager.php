@@ -5,7 +5,6 @@ namespace Webman\Database;
 use Illuminate\Database\DatabaseManager as BaseDatabaseManager;
 use Throwable;
 use Webman\Context;
-use Workerman\Coroutine\Coroutine;
 use Workerman\Coroutine\Pool;
 
 /**
@@ -52,7 +51,8 @@ class DatabaseManager extends BaseDatabaseManager
                 $connection = static::$pools[$name]->get();
                 Context::set($key, $connection);
             } finally {
-                Coroutine::defer(function () use ($connection, $name) {
+                // We cannot use Coroutine::defer() because we may not be in a coroutine environment currently.
+                Context::onDestroy(function () use ($connection, $name) {
                     try {
                         $connection && static::$pools[$name]->put($connection);
                     } catch (Throwable) {
