@@ -30,12 +30,19 @@ use support\Container;
 class Initializer
 {
 
+    private static bool $initialized = false;
+
     /**
      * @param $config
      * @return void
      */
     public static function init($config): void
     {
+        if (self::$initialized) {
+            return;
+        }
+        self::$initialized = true;
+
         $connections = $config['connections'] ?? [];
         if (!$connections) {
             return;
