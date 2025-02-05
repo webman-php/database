@@ -22,6 +22,24 @@ class Install
             copy(__DIR__ . '/config/database.php', $database_file);
         }
         static::installByRelation();
+        static::removeLaravelDbFromBootstrap();
+    }
+
+    /**
+     * @return void
+     */
+    protected static function removeLaravelDbFromBootstrap(): void
+    {
+        $file = base_path('config/bootstrap.php');
+        if (!is_file($file)) {
+            return;
+        }
+        $pattern = '/^\s*support\\\\bootstrap\\\\LaravelDb::class,\s*?\r?\n/m';
+        $content = file_get_contents($file);
+        if (preg_match($pattern, $content)) {
+            $updatedContent = preg_replace($pattern, '', $content);
+            file_put_contents($file, $updatedContent);
+        }
     }
 
     /**
@@ -69,5 +87,5 @@ class Install
             remove_dir($path);
         }
     }
-    
+
 }

@@ -30,6 +30,9 @@ use support\Container;
 class Initializer
 {
 
+    /**
+     * @var bool
+     */
     private static bool $initialized = false;
 
     /**
