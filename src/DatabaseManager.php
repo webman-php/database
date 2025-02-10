@@ -43,7 +43,11 @@ class DatabaseManager extends BaseDatabaseManager
                     $this->closeAndFreeConnection($connection);
                 });
                 $pool->setHeartbeatChecker(function ($connection) {
-                    $connection->select('select 1');
+                    if (in_array($connection->getDriverName(), ['mysql', 'pgsql', 'sqlite', 'sqlsrv'])) {
+                        $connection->select('select 1');
+                    } elseif ($connection->getDriverName() === 'mongodb') {
+                        $connection->command(['ping' => 1]);
+                    }
                 });
                 static::$pools[$name] = $pool;
             }
