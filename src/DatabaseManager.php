@@ -19,6 +19,22 @@ class DatabaseManager extends BaseDatabaseManager
     protected static array $pools = [];
 
     /**
+     * @inheritDoc
+     */
+    public function __construct(...$args)
+    {
+        parent::__construct(...$args);
+        $this->reconnector = function ($connection) {
+            $name = $connection->getNameWithReadWriteType();
+            [$database, $type] = $this->parseConnectionName($name);
+            $fresh = $this->configure(
+                $this->makeConnection($database), $type
+            );
+            $connection->setPdo($fresh->getRawPdo());
+        };
+    }
+
+    /**
      * Get connection
      *
      * @param $name
