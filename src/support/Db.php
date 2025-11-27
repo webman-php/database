@@ -16,6 +16,7 @@ namespace support;
 
 use Closure;
 use Webman\Database\Manager;
+use Illuminate\Contracts\Database\Query\Expression;
 
 require_once __DIR__ . '/../Initializer.php';
 
@@ -31,6 +32,7 @@ require_once __DIR__ . '/../Initializer.php';
  * @method static void beginTransaction()
  * @method static void rollBack($toLevel = null)
  * @method static void commit()
+ * @method static Expression raw(mixed $value)
  */
 class Db extends Manager
 {
