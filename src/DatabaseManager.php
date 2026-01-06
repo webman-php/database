@@ -12,6 +12,20 @@ use Workerman\Coroutine\Pool;
  */
 class DatabaseManager extends BaseDatabaseManager
 {
+    /**
+     * Default heartbeat SQL (most SQL databases).
+     *
+     * @var string
+     */
+    private const HEARTBEAT_SQL_DEFAULT = 'SELECT 1 AS ping';
+
+    /**
+     * Oracle heartbeat SQL.
+     *
+     * @var string
+     */
+    private const HEARTBEAT_SQL_ORACLE = 'SELECT 1 AS ping FROM DUAL';
+
 
     /**
      * @var Pool[]
@@ -41,7 +55,7 @@ class DatabaseManager extends BaseDatabaseManager
      * @return mixed
      * @throws Throwable
      */
-    public function connection($name = null)
+    public function connection($name = null): mixed
     {
         $name = $name ?: $this->getDefaultConnection();
         [$database, $type] = $this->parseConnectionName($name);
@@ -59,11 +73,7 @@ class DatabaseManager extends BaseDatabaseManager
                     $this->closeAndFreeConnection($connection);
                 });
                 $pool->setHeartbeatChecker(function ($connection) {
-                    if (in_array($connection->getDriverName(), ['mysql', 'pgsql', 'sqlite', 'sqlsrv'])) {
-                        $connection->select('select 1');
-                    } elseif ($connection->getDriverName() === 'mongodb') {
-                        $connection->command(['ping' => 1]);
-                    }
+                    $this->heartbeat($connection);
                 });
                 static::$pools[$name] = $pool;
             }
@@ -82,6 +92,45 @@ class DatabaseManager extends BaseDatabaseManager
             }
         }
         return $connection;
+    }
+
+    /**
+     * Heartbeat checker for pooled connections.
+     *
+     * @param mixed $connection
+     * @return void
+     */
+    private function heartbeat(mixed $connection): void
+    {
+        $driver = strtolower((string)$connection->getDriverName());
+
+        // MongoDB (mongodb/laravel-mongodb or jenssegers/mongodb)
+        if ($driver === 'mongodb') {
+            $connection->command(['ping' => 1]);
+            return;
+        }
+
+        $sql = $this->getHeartbeatSql($driver);
+        if ($sql !== '') {
+            $connection->select($sql);
+        }
+    }
+
+    /**
+     * Get heartbeat SQL by driver name.
+     *
+     * Illuminate\Database supports mysql/mariadb/pgsql/sqlite/sqlsrv by default.
+     * Oracle (oracle/oci/oci8) may be provided by third-party drivers.
+     *
+     * @param string $driver
+     * @return string
+     */
+    private function getHeartbeatSql(string $driver): string
+    {
+        return match ($driver) {
+            'oracle', 'oci', 'oci8' => self::HEARTBEAT_SQL_ORACLE,
+            default => self::HEARTBEAT_SQL_DEFAULT,
+        };
     }
 
     /**
