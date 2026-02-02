@@ -141,6 +141,11 @@ class DatabaseManager extends BaseDatabaseManager
      */
     protected function closeAndFreeConnection($connection): void
     {
+        // Remove connection from Context
+        $name = $connection->getNameWithReadWriteType();
+        $key = "database.connections.$name";
+        Context::set($key, null);
+
         $connection->disconnect();
         $clearProperties = function () {
             $this->queryGrammar = null;
